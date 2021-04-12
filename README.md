@@ -1,7 +1,7 @@
 # WebDavSharp
 WebDAV middleware for ASP.NET Core
 
-### Useto use ###
+### How to use ###
 
 ```csharp
 using WebDavSharp.Core;
