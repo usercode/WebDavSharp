@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using WebDavSharp.Core.WebDAV;
 using WebDavSharp.Core.WebDAV.Results;
 
-namespace WebDavSharp.Core.Filesystems
+namespace WebDavSharp.Core
 {
     /// <summary>
     /// LocalFilesystem
@@ -97,7 +97,22 @@ namespace WebDavSharp.Core.Filesystems
 
         public async Task<bool> DeleteAsync(WebDavContext context)
         {
-            return false;
+            string fullpath = GetLocalPath(context.Path);
+
+            if (Directory.Exists(fullpath))
+            {
+                Directory.Delete(fullpath, true);
+            }
+            else if (File.Exists(fullpath))
+            {
+                File.Delete(fullpath);
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public async Task<IWebDavResult> CreateCollectionAsync(WebDavContext context)

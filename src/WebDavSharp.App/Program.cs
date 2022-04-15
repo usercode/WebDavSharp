@@ -1,26 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using WebDavSharp.Core;
+using WebDavSharp.Core.WebDAV;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
-namespace WebDavSharp.App
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<WebDavOptions>(builder.Configuration.GetSection("General"));
+builder.Services.Configure<LocalFilesystemOptions>(builder.Configuration.GetSection("Filesystem"));
+
+builder.Services.AddWebDavSharp(x => x.IsReadOnly = false)
+                .AddFilesystem();
+
+var app = builder.Build();
+
+var env = app.Services.GetRequiredService<IWebHostEnvironment>();
+
+if (env.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseHttpsRedirection();
+app.UseWebDavSharp(PathString.Empty);
+
+app.Run();

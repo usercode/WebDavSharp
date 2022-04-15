@@ -18,6 +18,9 @@ using Microsoft.Extensions.Options;
 
 namespace WebDavSharp.Middlewares
 {
+    /// <summary>
+    /// WebDavMiddleware
+    /// </summary>
     class WebDavMiddleware
     {
         private readonly RequestDelegate _next;

@@ -14,26 +14,22 @@ namespace WebDavSharp.Core
 {
     public static class Extensions
     {
-        public static IWebDavBuilder AddWebDavSharp(this IServiceCollection services)
+        public static IWebDavBuilder AddWebDavSharp(this IServiceCollection services, Action<WebDavOptions>? options = null)
         {
-            return AddWebDavSharp(services, x => { });
-        }
-
-        public static IWebDavBuilder AddWebDavSharp(this IServiceCollection services, Action<WebDavOptions> options)
-        {
-            services.Configure(options);
+            if (options != null)
+            {
+                services.Configure(options);
+            }
 
             return new WebDavBuilder(services);
         }
 
-        public static IWebDavBuilder AddFilesystem(this IWebDavBuilder builder)
+        public static IWebDavBuilder AddFilesystem(this IWebDavBuilder builder, Action<LocalFilesystemOptions>? options = null)
         {
-            return AddFilesystem(builder, x => { });
-        }
-
-        public static IWebDavBuilder AddFilesystem(this IWebDavBuilder builder, Action<LocalFilesystemOptions> options)
-        {
-            builder.Services.Configure(options);
+            if (options != null)
+            {
+                builder.Services.Configure(options);
+            }
 
             builder.Services.AddTransient<IWebDavFilesystem, LocalFilesystem>();
 
@@ -51,7 +47,7 @@ namespace WebDavSharp.Core
             return builder;
         }
 
-        public static IEndpointConventionBuilder MapWebDavSharp(this IEndpointRouteBuilder endpoints)
+        private static IEndpointConventionBuilder MapWebDavSharp(this IEndpointRouteBuilder endpoints)
         {
             IOptions<WebDavOptions> options = endpoints.ServiceProvider.GetRequiredService<IOptions<WebDavOptions>>();
 
